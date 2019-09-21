@@ -1,85 +1,92 @@
 package me.changjun.demorestapi.events;
 
-import org.junit.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(JUnitParamsRunner.class)
 public class EventTest {
 
-    @Test
-    public void builder() {
-        Event event = Event.builder()
-                .name("Iflearn Spring Rest Api")
-                .description("REST API development with Spring")
-                .build();
-        assertThat(event).isNotNull();
-    }
+  @Test
+  public void builder() {
+    Event event = Event.builder()
+        .name("Iflearn Spring Rest Api")
+        .description("REST API development with Spring")
+        .build();
+    assertThat(event).isNotNull();
+  }
 
-    @Test
-    public void javaBean() {
-        //given
-        String name = "Event";
-        String description = "Spring";
+  @Test
+  public void javaBean() {
+    //given
+    String name = "Event";
+    String description = "Spring";
 
-        //when
-        Event event = new Event();
-        event.setName(name);
-        event.setDescription(description);
+    //when
+    Event event = new Event();
+    event.setName(name);
+    event.setDescription(description);
 
-        //then
-        assertThat(event.getName()).isEqualTo(name);
-        assertThat(event.getDescription()).isEqualTo(description);
+    //then
+    assertThat(event.getName()).isEqualTo(name);
+    assertThat(event.getDescription()).isEqualTo(description);
 
-    }
+  }
 
-    @Test
-    public void testFree() {
-        //given
-        Event event = Event.builder()
-            .basePrice(0)
-            .maxPrice(0)
-            .build();
+  @Test
+  /*@Parameters({
+      "0, 0, true",
+      "100, 0, false",
+      "0, 100, false"
+  })*/
+  //@Parameters(method = "paramsForTestFree")
+  @Parameters
+  public void testFree(int basePrice, int maxPrice, boolean isFree) {
+    //given
+    Event event = Event.builder()
+        .basePrice(basePrice)
+        .maxPrice(maxPrice)
+        .build();
 
-        //when
-        event.init();
+    //when
+    event.init();
 
-        //then
-        assertThat(event.isFree()).isTrue();
+    //then
+    assertThat(event.isFree()).isEqualTo(isFree);
+  }
 
-        //given
-        event = Event.builder()
-            .basePrice(100)
-            .maxPrice(200)
-            .build();
+  private Object[] parametersForTestFree() {
+    return new Object[]{
+        new Object[]{0, 0, true},
+        new Object[]{100, 0, false},
+        new Object[]{0, 100, false}
+    };
+  }
 
-        //when
-        event.init();
+  @Test
+  @Parameters
+  public void testOffline(String location, boolean isOffLine) {
+    //given
+    Event event = Event.builder()
+        .location(location)
+        .build();
 
-        //then
-        assertThat(event.isFree()).isFalse();
-    }
+    //when
+    event.init();
 
-    @Test
-    public void testOffline() {
-        //given
-        Event event = Event.builder()
-            .location("강남 신사")
-            .build();
+    //then
+    assertThat(event.isOffline()).isEqualTo(isOffLine);
 
-        //when
-        event.init();
+  }
 
-        //then
-        assertThat(event.isOffline()).isTrue();
-
-        //given
-        event = Event.builder()
-            .build();
-
-        //when
-        event.init();
-
-        //then
-        assertThat(event.isOffline()).isFalse();
-    }
+  private Object[] parametersForTestOffline() {
+    return new Object[]{
+        new Object[]{"강남구 신사동", true},
+        new Object[]{null, false},
+        new Object[]{"   ", false}
+    };
+  }
 }
