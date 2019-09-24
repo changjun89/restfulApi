@@ -193,10 +193,11 @@ public class EventControllerTest {
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(objectMapper.writeValueAsBytes(eventDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$[0].objectName").exists())
-                .andExpect(jsonPath("$[0].field").exists())
-                .andExpect(jsonPath("$[0].defaultMessage").exists())
-                .andExpect(jsonPath("$[0].code").exists())
-                .andExpect(jsonPath("$[0].rejectedValue").exists());
+                .andExpect(jsonPath("content[0].objectName").exists())
+                .andExpect(jsonPath("content[0].field").exists())
+                .andExpect(jsonPath("content[0].defaultMessage").exists())
+                .andExpect(jsonPath("content[0].code").exists())
+                .andExpect(jsonPath("content[0].rejectedValue").exists())
+                .andExpect(jsonPath("_links.events").exists());
     }
 }
