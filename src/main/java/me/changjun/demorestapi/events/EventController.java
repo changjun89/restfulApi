@@ -2,12 +2,18 @@ package me.changjun.demorestapi.events;
 
 import me.changjun.demorestapi.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,13 +37,21 @@ public class EventController {
         this.eventValidator = eventValidator;
     }
 
+    @GetMapping
+    public ResponseEntity queryEvents(Pageable pageable, PagedResourcesAssembler<Event> assembler) {
+        Page<Event> events = eventRepository.findAll(pageable);
+        PagedResources<Resource<Event>> resources = assembler.toResource(events, e -> new EventResource(e));
+        resources.add(new Link("/docs/index.html#resource-events-list").withRel("profile"));
+        return ResponseEntity.ok().body(resources);
+    }
+
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return badRequest(errors);
         }
         eventValidator.validate(eventDto, errors);
-        if(errors.hasErrors()) {
+        if (errors.hasErrors()) {
             return badRequest(errors);
         }
         Event event = modelMapper.map(eventDto, Event.class);

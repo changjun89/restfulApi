@@ -18,12 +18,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
+import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
 import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,6 +43,9 @@ public class EventControllerTest {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    EventRepository eventRepository;
 
     @Test
     @TestDescription("정상적으로 이벤트를 생성하는 테스트")
@@ -200,4 +205,34 @@ public class EventControllerTest {
                 .andExpect(jsonPath("content[0].rejectedValue").exists())
                 .andExpect(jsonPath("_links.events").exists());
     }
+
+    @Test
+    @TestDescription("30개의 이벤트중에 페이지 사이즈10으로 2번재페이지를 가지온다")
+    public void eventsList() throws Exception {
+        IntStream.range(0, 30).forEach(this::makeEventData);
+
+        mockMvc.perform(get("/api/events")
+                .param("size", "10")
+                .param("page", "2")
+                .param("sort", "name,desc")
+        )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("page").exists())
+                .andExpect(jsonPath("_embedded.eventList[0]._links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("query-events-list"
+
+                ));
+
+    }
+
+    private void makeEventData(int index) {
+        Event event = Event.builder().name("event " + index)
+                .description("event description " + index)
+                .build();
+
+        eventRepository.save(event);
+    }
 }
+
