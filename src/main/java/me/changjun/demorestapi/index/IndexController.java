@@ -13,7 +13,7 @@ public class IndexController {
     @GetMapping("/api")
     public ResourceSupport index() {
         ResourceSupport resourceSupport = new ResourceSupport();
-        resourceSupport.add(linkTo(EventController.class).withRel("events"));
+        resourceSupport.add(linkTo(EventController.class).withRel("eventsIndex"));
         return resourceSupport;
     }
 }
