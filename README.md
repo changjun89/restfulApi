@@ -1,2 +1,2 @@
 # restfulApi
-REST API 학습
+RESTful API 학습
