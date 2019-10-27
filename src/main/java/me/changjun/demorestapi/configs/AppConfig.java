@@ -5,6 +5,7 @@ import java.util.Set;
 import me.changjun.demorestapi.accounts.Account;
 import me.changjun.demorestapi.accounts.AccountRole;
 import me.changjun.demorestapi.accounts.AccountService;
+import me.changjun.demorestapi.common.AppProperties;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -34,21 +35,33 @@ public class AppConfig {
       @Autowired
       private AccountService accountService;
 
+      @Autowired
+      private AppProperties appProperties;
+
       @Override
       public void run(ApplicationArguments args) throws Exception {
-        Set roles = new HashSet();
-        roles.add(AccountRole.USER);
-        roles.add(AccountRole.ADMIN);
-        Account account = Account.builder()
-            .email("leechang0423@naver.com")
-            .password("changjun")
-            .accountRoles(roles)
+        Set adminRoles = new HashSet();
+        adminRoles.add(AccountRole.USER);
+        adminRoles.add(AccountRole.ADMIN);
+        Account admin = Account.builder()
+            .email(appProperties.getAdminUserName())
+            .password(appProperties.getUserPassword())
+            .accountRoles(adminRoles)
             .build();
 
-        accountService.saveAccount(account);
+        accountService.saveAccount(admin);
+
+        Set userRoles = new HashSet();
+        adminRoles.add(AccountRole.USER);
+        Account user = Account.builder()
+            .email(appProperties.getUserUserName())
+            .password(appProperties.getUserPassword())
+            .accountRoles(userRoles)
+            .build();
+
+        accountService.saveAccount(user);
       }
     };
-
   }
 
 }

@@ -26,6 +26,7 @@ import me.changjun.demorestapi.accounts.Account;
 import me.changjun.demorestapi.accounts.AccountRepository;
 import me.changjun.demorestapi.accounts.AccountRole;
 import me.changjun.demorestapi.accounts.AccountService;
+import me.changjun.demorestapi.common.AppProperties;
 import me.changjun.demorestapi.common.BaseControllerTest;
 import me.changjun.demorestapi.common.TestDescription;
 import org.junit.Before;
@@ -45,6 +46,8 @@ public class EventControllerTest extends BaseControllerTest {
   private AccountService accountService;
   @Autowired
   private AccountRepository accountRepository;
+  @Autowired
+  private AppProperties appProperties;
 
   @Before
   public void setup() {
@@ -151,8 +154,8 @@ public class EventControllerTest extends BaseControllerTest {
     Set roles = new HashSet();
     roles.add(AccountRole.USER);
     roles.add(AccountRole.ADMIN);
-    String userName = "leechang@naver.com";
-    String password = "changjun";
+    String userName = appProperties.getUserUserName();
+    String password = appProperties.getUserPassword();
     Account account = Account.builder()
         .email(userName)
         .password(password)
@@ -161,12 +164,12 @@ public class EventControllerTest extends BaseControllerTest {
 
     accountService.saveAccount(account);
 
-    String id = "myApp";
-    String secret = "secret";
+    String id = appProperties.getClientName();
+    String secret = appProperties.getClientSecret();
     ResultActions perform = mockMvc.perform(post("/oauth/token")
         .with(httpBasic(id, secret))
-        .param("username", userName)
-        .param("password", password)
+        .param("username", appProperties.getUserUserName())
+        .param("password", appProperties.getUserPassword())
         .param("grant_type", "password")
     );
 
