@@ -1,6 +1,7 @@
 package me.changjun.demorestapi.accounts;
 
 import java.util.Set;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -27,6 +28,7 @@ public class Account {
   @Id
   @GeneratedValue
   private Integer id;
+  @Column(unique = true)
   private String email;
   private String password;
 
