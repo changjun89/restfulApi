@@ -1,19 +1,10 @@
 package me.changjun.demorestapi.events;
 
-import java.time.LocalDateTime;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import me.changjun.demorestapi.accounts.Account;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Builder
 @AllArgsConstructor
@@ -24,45 +15,45 @@ import me.changjun.demorestapi.accounts.Account;
 @Entity
 public class Event {
 
-  @Id
-  @GeneratedValue
-  private Integer id;
-  private String name;
-  private String description;
-  private LocalDateTime beginEnrollmentDateTime;
-  private LocalDateTime closeEnrollmentDateTime;
-  private LocalDateTime beginEventDateTime;
-  private LocalDateTime endEventDateTime;
-  private String location; // (optional) 이게 없으면 온라인 모임
-  private int basePrice; // (optional)
-  private int maxPrice; // (optional)
-  private int limitOfEnrollment;
-  private boolean offline;
-  private boolean free;
-  @Enumerated(value = EnumType.STRING)
-  private EventStatus eventStatus = EventStatus.DRAFT;
+    @Id
+    @GeneratedValue
+    private Integer id;
+    private String name;
+    private String description;
+    private LocalDateTime beginEnrollmentDateTime;
+    private LocalDateTime closeEnrollmentDateTime;
+    private LocalDateTime beginEventDateTime;
+    private LocalDateTime endEventDateTime;
+    private String location; // (optional) 이게 없으면 온라인 모임
+    private int basePrice; // (optional)
+    private int maxPrice; // (optional)
+    private int limitOfEnrollment;
+    private boolean offline;
+    private boolean free;
+    @Enumerated(value = EnumType.STRING)
+    private EventStatus eventStatus = EventStatus.DRAFT;
 
-  @ManyToOne
-  private Account account;
+    @ManyToOne
+    private Account manager;
 
-  public void init() {
-    initPrice();
-    initOffline();
-  }
-
-  private void initOffline() {
-    if (this.location != null && !this.location.trim().isEmpty()) {
-      this.offline = true;
-      return;
+    public void init() {
+        initPrice();
+        initOffline();
     }
-    this.offline = false;
-  }
 
-  private void initPrice() {
-    if (this.basePrice == 0 && this.maxPrice == 0) {
-      this.free = true;
-      return;
+    private void initOffline() {
+        if (this.location != null && !this.location.trim().isEmpty()) {
+            this.offline = true;
+            return;
+        }
+        this.offline = false;
     }
-    this.free = false;
-  }
+
+    private void initPrice() {
+        if (this.basePrice == 0 && this.maxPrice == 0) {
+            this.free = true;
+            return;
+        }
+        this.free = false;
+    }
 }
