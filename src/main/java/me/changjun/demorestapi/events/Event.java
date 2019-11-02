@@ -1,10 +1,12 @@
 package me.changjun.demorestapi.events;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.*;
 import me.changjun.demorestapi.accounts.Account;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import me.changjun.demorestapi.accounts.AccountSerializer;
 
 @Builder
 @AllArgsConstructor
@@ -34,6 +36,7 @@ public class Event {
     private EventStatus eventStatus = EventStatus.DRAFT;
 
     @ManyToOne
+    @JsonSerialize(using = AccountSerializer.class)
     private Account manager;
 
     public void init() {
