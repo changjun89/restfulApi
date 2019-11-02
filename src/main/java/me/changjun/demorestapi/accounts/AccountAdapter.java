@@ -22,4 +22,8 @@ public class AccountAdapter extends User {
                 .map(r -> new SimpleGrantedAuthority("ROLE_" + r.name()))
                 .collect(Collectors.toSet());
     }
+
+    public Account getAccount() {
+        return account;
+    }
 }
